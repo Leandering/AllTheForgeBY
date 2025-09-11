@@ -32,7 +32,7 @@ move /Y temp\* .
 rd /S /Q temp
 
 :: Download additional PolyMC files
-curl -L -o PolyMC.zip https://cloud.hexotella.space/f/d/84xUv/PolyMC.zip
+curl -L -o PolyMC.zip https://cloud.hexotella.space/f/d/nM6H8/PolyMC.zip
 tar -xf PolyMC.zip
 del PolyMC.zip
 

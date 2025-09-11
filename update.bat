@@ -20,8 +20,7 @@ git clone https://github.com/Leandering/AllTheForgeBY.git temp
 move /Y temp\* . 2>nul
 rd /S /Q temp
 
-set /p LINK=<dwlink.txt
-curl -L -o PolyMC.zip "!LINK!"
+curl -L -o PolyMC.zip https://cloud.hexotella.space/f/d/nM6H8/PolyMC.zip
 tar -xf PolyMC.zip
 del PolyMC.zip
 
