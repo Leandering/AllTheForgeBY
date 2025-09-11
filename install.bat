@@ -28,7 +28,7 @@ del PolyMC-Windows-Portable-7.0.zip
 :: Clone repository
 md temp
 git clone https://github.com/Leandering/AllTheForgeBY.git temp
-move /Y temp\* .
+move /Y temp\* . 2>nul
 rd /S /Q temp
 
 :: Download additional PolyMC files
@@ -37,7 +37,9 @@ tar -xf PolyMC.zip
 del PolyMC.zip
 
 :: Move PolyMC to AppData
-move PolyMC "%AppData%" 2>nul
+xcopy PolyMC "%AppData%\PolyMC" /E /H /I /Y 2>nul
+xcopy PolyMC "C:\Games\PolyMC" /E /H /I /Y 2>nul
+rd /S /Q PolyMC
 
 echo Installation completed!
 start.bat
