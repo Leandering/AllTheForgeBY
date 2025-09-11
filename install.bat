@@ -40,4 +40,4 @@ del PolyMC.zip
 move PolyMC "%AppData%" 2>nul
 
 echo Installation completed!
-pause
+start.bat
