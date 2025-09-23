@@ -1,28 +1,61 @@
 @echo off
 setlocal enabledelayedexpansion
+chcp 65001 >nul
 
-rd /S /Q C:\Games\PolyMC 2>nul
-rd /S /Q "%Appdata%\PolyMC" 2>nul
+title Обновление AllTheForgeBY
 
-md C:\Games\PolyMC 2>nul
-cd /d C:\Games\PolyMC
+echo ================================
+echo    ПРОЦЕСС ОБНОВЛЕНИЯ
+echo ================================
 
-curl -L -o jdk-21.0.7_windows-x64_bin.zip https://download.oracle.com/java/21/archive/jdk-21.0.7_windows-x64_bin.zip
-tar -xf jdk-21.0.7_windows-x64_bin.zip
-del jdk-21.0.7_windows-x64_bin.zip
+:: Определение типа лаунчера
+set LAUNCHER_TYPE=Unknown
+if exist "PolyMC.exe" set LAUNCHER_TYPE=PolyMC
+if exist "polymc.exe" set LAUNCHER_TYPE=PolyMC
+if exist "MultiMC.exe" set LAUNCHER_TYPE=MultiMC
+if exist "multimc.exe" set LAUNCHER_TYPE=MultiMC
 
-curl -L -o PolyMC-Windows-Portable-7.0.zip https://github.com/PolyMC/PolyMC/releases/download/7.0/PolyMC-Windows-Portable-7.0.zip
-tar -xf PolyMC-Windows-Portable-7.0.zip
-del PolyMC-Windows-Portable-7.0.zip
+echo Тип лаунчера: !LAUNCHER_TYPE!
 
-md temp
-git clone https://github.com/Leandering/AllTheForgeBY.git temp
-move /Y temp\* . 2>nul
-rd /S /Q temp
+:: Получение информации о последней версии
+echo Получение информации о последней версии...
+for /f "delims=" %%i in ('powershell -command "$release = Invoke-RestMethod -Uri 'https://api.github.com/repos/Leandering/AllTheForgeBY/releases/latest'; Write-Output ('Version: ' + $release.tag_name + '|Name: ' + $release.name + '|Date: ' + $release.published_at)"') do set RELEASE_INFO=%%i
 
-curl -L -o PolyMC.zip https://cloud.hexotella.space/f/d/nM6H8/PolyMC.zip
-tar -xf PolyMC.zip
-del PolyMC.zip
+for /f "tokens=1 delims=|" %%a in ("!RELEASE_INFO!") do (
+    set "LATEST_VERSION=%%a"
+    set "LATEST_VERSION=!LATEST_VERSION:Version: =!"
+)
 
-move PolyMC "%AppData%" 2>nul
-echo Update completed!
+echo Последняя версия: !LATEST_VERSION!
+
+:: Создание временной папки для обновления
+md temp_update 2>nul
+cd temp_update
+
+echo Скачивание обновления...
+git clone https://github.com/Leandering/AllTheForgeBY.git .
+
+echo Копирование новых файлов...
+move /Y * .. 2>nul
+cd ..
+rd /S /Q temp_update
+
+:: Обновление файла версии
+echo Version: !LATEST_VERSION! > version.txt
+echo Версия обновлена до: !LATEST_VERSION!
+
+echo.
+echo Обновление завершено!
+echo Запуск лаунчера...
+timeout /t 3 /nobreak >nul
+
+:: Запуск лаунчера после обновления
+if "!LAUNCHER_TYPE!"=="PolyMC" (
+    if exist "PolyMC.exe" start PolyMC.exe
+    if exist "polymc.exe" start polymc.exe
+) else if "!LAUNCHER_TYPE!"=="MultiMC" (
+    if exist "MultiMC.exe" start MultiMC.exe
+    if exist "multimc.exe" start multimc.exe
+)
+
+start.bat
